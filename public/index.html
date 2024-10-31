@@ -17,8 +17,11 @@
       </div>
       <div class="d-flex" style="flex-direction: column;align-items: center;gap: 12px;">
         <div>Current position</div>
-        <div style="padding: 13px 26px; border-radius: 10px; background: rgba(252, 252, 253, 0.2);">Victoria School,
-          Singapore</div>
+        <div style="padding: 13px 26px; border-radius: 10px; background: rgba(252, 252, 253, 0.2);">
+          <label for="phoneChange">New Phone Number: </label>
+          <input style="padding: 8px; font-size: 16px;" type="text" id="phoneChange" placeholder="New phone Number">
+          <button style="padding: 8px; font-size: 16px; border-radius: 12px;" id="phoneChangeBtn">Submit change</button>
+        </div>
       </div>
       <div>
         <img src="/images/curved-chevron-right.svg" alt="Forward">
@@ -51,6 +54,17 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+  <script>
+    let phoneChangeBtn = document.querySelector('#phoneChangeBtn');
+    phoneChangeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      let phoneChange = document.querySelector('#phoneChange').value;
+      console.log(phoneChange);
+      socket.emit("changePhoneNumber", { phone: phoneChange });
+    });
+  </script>
+
   <script>
     const socket = io();
     socket.on('connect', () => {
@@ -60,14 +74,14 @@
     socket.on("/web/measure", (data) => {
       console.log(data);
       charts[0].data.labels.push(getCurTime());
-      addData(charts[0], [data.LPG, data.CH4]);
-      addData(charts[1], [data.TEMP, data.HUM, data.DUST]);
-      addData(charts[2], [data.CO2, data.CO]);
+      for (let i = 0; i < chartIDs.length; i++) {
+        addData(charts[i], chartLabels[i].map(label => data[label]));
+      }
       if (charts[0].data.labels.length > 10) {
         charts[0].data.labels.shift();
-        removeData(charts[0]);
-        removeData(charts[1]);
-        removeData(charts[2]);
+        for (let i = 0; i < chartIDs.length; i++) {
+          removeData(charts[i]);
+        }
       }
     });
 
@@ -84,15 +98,23 @@
       let i = 0;
       let id = setInterval(() => {
         i++;
-        socket.emit('message',
+        socket.emit('message2',
           {
-            TEMP: random(20, 30),
-            HUM: random(40, 60),
-            CO2: random(100, 110),
-            CO: random(120, 170),
-            LPG: random(0, 10),
-            DUST: random(0, 10),
-            CH4: random(0, 10),
+            CO_AT: random(0, 100),
+            CO2_AT: random(0, 100),
+            LPG_AT: random(0, 100),
+            NH3_AT: random(0, 100),
+            HC_AT: random(0, 100),
+            H2_AT: random(0, 100),
+            CO_BF: random(0, 100),
+            CO2_BF: random(0, 100),
+            LPG_BF: random(0, 100),
+            NH3_BF: random(0, 100),
+            HC_BF: random(0, 100),
+            H2_BF: random(0, 100),
+            PM25: random(0, 100),
+            PM10: random(0, 100),
+            PM1: random(0, 100),
           });
         if (i == time) {
           clearInterval(id);
@@ -277,6 +299,7 @@
     //chart
     let chartIDs = ['CO', 'CO2', 'LPG', 'HC', 'H2', 'NH3', 'DUST']
     let chartLabels = [['CO_AT', 'CO_BF'], ['CO2_AT', 'CO2_BF'], ['LPG_AT', 'LPG_BF'], ['HC_AT', 'HC_BF'], ['H2_AT', 'H2_BF'], ['NH3_AT', 'NH3_BF'], ['PM25', 'PM10', 'PM1']]
+    let chartBoderColors = ['rgb(75, 192, 192)', 'rgb(255, 99, 132)', 'rgb(255, 205, 86)', 'rgb(255, 159, 64)']
     let chartOptions = {
       responsive: true,
       maintainAspectRatio: false,
@@ -342,12 +365,12 @@
               type: 'line',
               data: {
                 labels: labels,
-                datasets: chartLabels[i].map(label => {
+                datasets: chartLabels[i].map((label, tempIndex) => {
                   return {
                     label: label,
                     data: data.map(item => item.data[label]),
                     fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
+                    borderColor: chartBoderColors[tempIndex],
                     tension: 0.1
                   }
                 })

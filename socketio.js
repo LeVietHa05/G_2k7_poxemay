@@ -85,11 +85,19 @@ io.on("connection", (socket) => {
                 tmpData[key].push(data[key]);
             }
         }
-
+        let newDataToSend = {
+        }
+        for (let key in tmpData) {
+            newDataToSend[key] = tmpData[key][tmpData[key].length - 1];
+        }
         tempFunction();
-        socket.broadcast.emit("/web/measure2", data)
+        socket.broadcast.emit("/web/measure", data)
     })
 
+    socket.on("changePhoneNumber", (data) => {
+        console.log(`Received data from ESP32: ${data}`);
+        socket.broadcast.emit(topicChangePhoneNumber, data)
+    })
 
 
     socket.on("disconnect", () => {
