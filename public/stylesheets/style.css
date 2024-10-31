@@ -24,7 +24,7 @@ img {
 main {
   background: url("/images/background.png") lightgray 50% / cover no-repeat;
   width: 1440px;
-  height: 1024px;
+  height: auto;
   margin: auto;
   padding: 64px;
   border-radius: 24px;
@@ -220,7 +220,8 @@ main {
   margin: auto;
   gap: 32px;
   margin-top: 32px;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 #charts > div {
@@ -230,7 +231,7 @@ main {
   gap: 12px;
   border-radius: 12px;
   width: 405px;
-  height: 326px;
+  height: auto;
   border-radius: 12px;
   background: rgba(252, 252, 253, 0.3);
 }

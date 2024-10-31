@@ -45,18 +45,7 @@
       </div>
     </div>
     <div id="charts">
-      <div>
-        <div class="chart-header">Gas</div>
-        <div class="canvas-holder"><canvas id="gasChart"></canvas></div>
-      </div>
-      <div>
-        <div class="chart-header">Temperature & Humidity & Dust</div>
-        <div class="canvas-holder"><canvas id="tempHumiChart"></canvas></div>
-      </div>
-      <div>
-        <div class="chart-header">CO2 & CO</div>
-        <div class="canvas-holder"><canvas id="CO2COchart"></canvas></div>
-      </div>
+      <!-- to be handle by js -->
     </div>
   </main>
   <script src="/socket.io/socket.io.js"></script>
@@ -116,7 +105,7 @@
   </script>
   <!-- code -->
   <script>
-  
+
     // openweather data   21.031616060576837, 105.78950108408195
     let apiForecast = "https://api.openweathermap.org/data/2.5/forecast?lat=21.03164&lon=105.7895&appid=9396f69fee320a0014ac3fa7ab35381d"
     let apiWeather = "https://api.openweathermap.org/data/2.5/weather?lat=21.0316&lon=105.7895&appid=9396f69fee320a0014ac3fa7ab35381d"
@@ -286,8 +275,8 @@
     }
 
     //chart
-    let chartIDs = ['gasChart', 'tempHumiChart', 'CO2COchart']
-    let chartLabels = [['LPG', 'CH4'], ['TEMP', 'HUM', 'DUST'], ['CO2', 'CO']]
+    let chartIDs = ['CO', 'CO2', 'LPG', 'HC', 'H2', 'NH3', 'DUST']
+    let chartLabels = [['CO_AT', 'CO_BF'], ['CO2_AT', 'CO2_BF'], ['LPG_AT', 'LPG_BF'], ['HC_AT', 'HC_BF'], ['H2_AT', 'H2_BF'], ['NH3_AT', 'NH3_BF'], ['PM25', 'PM10', 'PM1']]
     let chartOptions = {
       responsive: true,
       maintainAspectRatio: false,
@@ -340,13 +329,14 @@
     }
     let charts = []
     function genChart() {
+      genChartDiv();
       fetch("/chartdata")
         .then(res => res.json())
         .then(data => {
           console.log(data)
           let labels = data.map(item => item.time.slice(0, 5))
 
-          for (let i = 0; i < 3; i++) {
+          for (let i = 0; i < chartIDs.length; i++) {
             let ctx = document.getElementById(chartIDs[i]).getContext('2d');
             let chart = new Chart(ctx, {
               type: 'line',
@@ -370,6 +360,16 @@
         })
     }
     genChart();
+
+    function genChartDiv() {
+      let chartsDiv = document.getElementById('charts');
+      for (let i = 0; i < chartIDs.length; i++) {
+        let chartDiv = document.createElement('div');
+        chartDiv.innerHTML = `<div class="chart-header">${chartLabels[i].join(' & ')}</div>
+        <div class="canvas-holder"><canvas id="${chartIDs[i]}"></canvas></div>`
+        chartsDiv.appendChild(chartDiv);
+      }
+    }
 
     function addData(chart /*Chart*/, newData/* array*/) {
       chart.data.datasets.forEach((dataset, i) => {

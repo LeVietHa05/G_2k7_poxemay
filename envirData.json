@@ -24,5 +24,31 @@
             "latitude": 18,
             "longitude": 110
         }
+    },
+    {
+        "id": 0,
+        "date": "2024-10-31",
+        "time": "22:29:35",
+        "data": {
+            "CO_AT": 2,
+            "CO2_AT": 2,
+            "LPG_AT": 2,
+            "NH3_AT": 2,
+            "HC_AT": 2,
+            "H2_AT": 2,
+            "CO_BF": 2,
+            "CO2_BF": 2,
+            "LPG_BF": 2,
+            "NH3_BF": 2,
+            "HC_BF": 2,
+            "H2_BF": 2,
+            "PM25": 2,
+            "PM10": 2,
+            "PM1": 2
+        },
+        "location": {
+            "latitude": 18,
+            "longitude": 110
+        }
     }
 ]
