@@ -64,9 +64,11 @@ const socketapi = {
 }
 
 let topicChangePhoneNumber = "changePhoneNumber";
+let phoneNumber = "0914915926"
 
 io.on("connection", (socket) => {
     console.log("A user connected");
+    socket.emit(topicChangePhoneNumber, { phoneNumber: phoneNumber });
 
     socket.on("message1", (data) => {
         console.log(`Received data from ESP32: ${data}`);
@@ -96,6 +98,7 @@ io.on("connection", (socket) => {
 
     socket.on("changePhoneNumber", (data) => {
         console.log(`Received data from ESP32: ${data}`);
+        phoneNumber = data.phoneNumber;
         socket.broadcast.emit(topicChangePhoneNumber, data)
     })
 
